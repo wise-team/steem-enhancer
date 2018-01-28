@@ -1,0 +1,93 @@
+<html>
+<meta charset="UTF-8">
+
+<head>
+    <title>Steem Enhancer</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../styles/bootstrap-tagsinput.css">
+
+    <script src="../scripts/jquery.min.js"></script>
+    <script src="../scripts/popper.min.js"></script>
+    <script src="../scripts/bootstrap.min.js"></script>
+    <script src="../scripts/bootstrap-tagsinput.min.js"></script>
+
+</head>
+
+<body>
+    <div class="jumbotron">
+        <div class="container">
+            <h1 class="display-3">Steem Enhancer</h1>
+            <p>Simple but powerfull extension to boost your User Experience using Steem blockchain, especially Steemit.com</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <h2>Followed tags:</h2>
+                 <p>Just type tag name (without hashtag '#') and press enter. If you want to follow popular tag <strong>conditionally</strong> there is a possibility
+                too. Type popular tag name, then space and then second tag which must appear to trigger notifications. For example if you
+                want to be notified about posts in 'tesla' tag but only when "polish" tag exist in that post - type "tesla polish" and press enter.
+                It should be visible as a single tag.</p>
+                <p><strong>Our tag #technocracy is added as an example. We will be glad if you leave it as it is :)</strong></p>
+                <div class="col-md-12 ">
+                    <input id="followedTags" type="text" value="" data-role="tagsinput">
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <h2>Settings</h2>
+                <p>Despite the extension's simplicity it allows you to configure some functionalities.</p>
+
+                <form id="settings">
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label data-toggle="tooltip" data-placement="left" title="Play sounds on new articles">
+                                <input type="checkbox" id="soundsEnabled"> Sound notifications</label>
+                        </div>
+
+                        <div class="checkbox">
+                            <label data-toggle="tooltip" data-placement="left" title="Show Rich Notifications which can be clicked to read new article">
+                                <input type="checkbox" id="richNotificationsEnabled"> Show Rich Notifications</label>
+                        </div>
+
+                        <div class="checkbox">
+                            <label data-toggle="tooltip" data-placement="left" title="Check to show images in Rich Notifications">
+                                <input type="checkbox" id="showImagesInNotifications"> Show images in Rich Notifications</label>
+                        </div>
+
+                        <div class="checkbox">
+                            <label data-toggle="tooltip" data-placement="left" title="Check if you want new tabs to be opened in background (after clicking in new posts list)">
+                                <input type="checkbox" id="openTabsInBackground"> Open new tabs in background</label>
+                        </div>                      
+
+                        <div style="width: 100%; margin-top: 15px;"></div>
+
+                        <button id="save" type="button " class="btn btn-info " style="margin-top: 15px ">
+                            Save settings
+                        </button>
+
+                        <span style="margin-left: 10px; margin-top: 15px " class="text-success " id="status "></span>
+
+    			  </div>
+    			</form>
+        </div>
+        <div class="col-md-4 ">
+          <h2>About @technocracy</h2>
+          <p class="text-justify ">We are a group of friends who are very interested in new technologies, space exploration and promoting technological development.
+        For a few years we have been creating and contributing to several websites focused mainly on space and technology but now we are focused to provide best content on Steem.</p>
+          <p><a id="steemit " class="btn btn-secondary " href="https://steemit.com/@technocracy" role="button ">Visit us on Steemit &raquo;</a></p>
+        </div>
+      </div>
+
+      <hr>
+      <script src="../scripts/core.js "></script>
+      <script src="../scripts/options.js "></script>
+      <footer>
+        <p>&copy; <a href="https://steemit.com/@technocracy">@technocracy</a> 2018</p>
+      </footer>
+    </div>
+</html>
