@@ -9,7 +9,7 @@ var WsRpc = require("./WebSocketRpc");
 var SteemApi = require("./SteemApi");
 
 var defaultOptions = {
-    url: "wss://steemd-int.steemit.com",
+    url: "wss://gtg.steem.house:8090",
     user: "",
     pass: "",
     debug: false,

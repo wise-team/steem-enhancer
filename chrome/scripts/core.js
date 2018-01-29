@@ -7,10 +7,14 @@ var COLOR_NEW_NOTIFICATION = {
 var audio = new Audio('../sounds/all-eyes-on-me.ogg');
 
 var settings = {
-    soundsEnabled: true,
+    soundsEnabled: false,
     richNotificationsEnabled: true,
     openTabsInBackground: true,
-    showImagesInNotifications: true
+    showImagesInNotifications: true,
+    showNotificationsFromFeed: true,
+    isInitialized: false,
+    showNotificationsForReplies: true,
+    username: ""
 }
 
 const entriesOnPopupPage = 10;
@@ -64,9 +68,6 @@ function saveNotificationList(list, callback) {
     
     chrome.storage.local.set({ entriesNotificationList: list }, function () {
         chrome.storage.local.get('entriesNotificationList', function (result) {
-            console.log("Zapisano ustawienia: ");
-            console.log(result.entriesNotificationList);
-
             if (callback) {
                 callback();
             }
@@ -84,17 +85,14 @@ function settingsReadTags(callback) {
 
 function settingsSaveFollowedTags(tagsArray) {
     chrome.storage.local.set({followedTags: tagsArray}, function () {
-        console.log("zapisano tagi:");
-        console.log(tagsArray);
+        console.log("Observed tags saved");
     })
 }
 
 
 function settingsReadSettings(callback) {
     chrome.storage.local.get({ settings: settings }, function (result) {
-        console.log(result);
         settings = result.settings;
-
         if(callback) {
             callback(result);
         }
@@ -103,12 +101,18 @@ function settingsReadSettings(callback) {
 
 function settingsSaveSettings(settings, callback) {
     chrome.storage.local.set({ settings: settings }, function (result) {
-        console.log("zapisano: " + result);
-
         if (callback) {
             callback(result);
         }
     });
+}
+
+function settingsIsUsernameEntered() {
+    if((settings.username != "") && (settings.username != null) ) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 function stripMarkdown(md, options) {

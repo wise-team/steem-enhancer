@@ -145,3 +145,7 @@ function init() {
 }
 
 init();
+
+// steem.api.getFeedHistory(function(err, result) {
+//     console.log(err, result);
+//   });

@@ -13,6 +13,7 @@
     <script src="../scripts/popper.min.js"></script>
     <script src="../scripts/bootstrap.min.js"></script>
     <script src="../scripts/bootstrap-tagsinput.min.js"></script>
+    <script type="text/javascript" src="../scripts/steem-rpc.js"></script>
 
 </head>
 
@@ -32,9 +33,13 @@
                 too. Type popular tag name, then space and then second tag which must appear to trigger notifications. For example if you
                 want to be notified about posts in 'tesla' tag but only when "polish" tag exist in that post - type "tesla polish" and press enter.
                 It should be visible as a single tag.</p>
-                <p><strong>Our tag #technocracy is added as an example. We will be glad if you leave it as it is :)</strong></p>
+                <p><strong>Our tag #technocracy is added as an example. You can of course remove it, but we will be glad if you leave it as it is :)</strong></p>
                 <div class="col-md-12 ">
                     <input id="followedTags" type="text" value="" data-role="tagsinput">
+                </div>
+                <p><strong>Your username:</strong></p>
+                <div class="col-md-12 ">
+                    <input id="username" type="text" value="">
                 </div>
             </div>
 
@@ -45,25 +50,35 @@
                 <form id="settings">
                     <div class="form-group">
                         <div class="checkbox">
-                            <label data-toggle="tooltip" data-placement="left" title="Play sounds on new articles">
-                                <input type="checkbox" id="soundsEnabled"> Sound notifications</label>
+                            <label data-toggle="tooltip" data-placement="right" title="Play sounds on new posts">
+                                <input type="checkbox" id="soundsEnabled">Sound notifications</label>
                         </div>
 
                         <div class="checkbox">
-                            <label data-toggle="tooltip" data-placement="left" title="Show Rich Notifications which can be clicked to read new article">
-                                <input type="checkbox" id="richNotificationsEnabled"> Show Rich Notifications</label>
+                            <label data-toggle="tooltip" data-placement="right" title="Show Rich Notifications which can be clicked to read new article">
+                                <input type="checkbox" id="richNotificationsEnabled">Show Rich Notifications</label>
                         </div>
 
                         <div class="checkbox">
-                            <label data-toggle="tooltip" data-placement="left" title="Check to show images in Rich Notifications">
-                                <input type="checkbox" id="showImagesInNotifications"> Show images in Rich Notifications</label>
+                            <label data-toggle="tooltip" data-placement="right" title="Check to show images in Rich Notifications">
+                                <input type="checkbox" id="showImagesInNotifications">Show images in Rich Notifications</label>
                         </div>
 
                         <div class="checkbox">
-                            <label data-toggle="tooltip" data-placement="left" title="Check if you want new tabs to be opened in background (after clicking in new posts list)">
-                                <input type="checkbox" id="openTabsInBackground"> Open new tabs in background</label>
-                        </div>                      
+                            <label data-toggle="tooltip" data-placement="right" title="Show new entries posted by people you follow (you need to enter your username)">
+                                <input type="checkbox" id="showNotificationsFromFeed">Show notifications from your feed</label>
+                        </div>
+                        
+                        <div class="checkbox">
+                            <label data-toggle="tooltip" data-placement="right" title="Show notification when someone reply to your post (you need to enter your username)">
+                                <input type="checkbox" id="showNotificationsForReplies">Show notifications for replies</label>
+                        </div> 
 
+                        <div class="checkbox">
+                            <label data-toggle="tooltip" data-placement="right" title="Check if you want new tabs to be opened in background (after clicking in new posts list)">
+                                <input type="checkbox" id="openTabsInBackground">Open new tabs in background</label>
+                        </div>            
+                        
                         <div style="width: 100%; margin-top: 15px;"></div>
 
                         <button id="save" type="button " class="btn btn-info " style="margin-top: 15px ">
@@ -76,7 +91,7 @@
     			</form>
         </div>
         <div class="col-md-4 ">
-          <h2>About @technocracy</h2>
+          <h2>About <a href="https://steemit.com/@technocracy">@technocracy</a></h2>
           <p class="text-justify ">We are a group of friends who are very interested in new technologies, space exploration and promoting technological development.
         For a few years we have been creating and contributing to several websites focused mainly on space and technology but now we are focused to provide best content on Steem.</p>
           <p><a id="steemit " class="btn btn-secondary " href="https://steemit.com/@technocracy" role="button ">Visit us on Steemit &raquo;</a></p>

@@ -19,7 +19,11 @@ function init() {
             document.getElementById('richNotificationsEnabled').checked = settings.richNotificationsEnabled;
             document.getElementById('openTabsInBackground').checked = settings.openTabsInBackground;
             document.getElementById('showImagesInNotifications').checked = settings.showImagesInNotifications;
+            document.getElementById('showNotificationsFromFeed').checked = settings.showNotificationsFromFeed;
+            document.getElementById('showNotificationsForReplies').checked = settings.showNotificationsForReplies;
+            document.getElementById('username').value = settings.username;
 
+            
             document.getElementById('save').addEventListener('click', saveSettingsFromOptionsPage);
             
             // enable tooltips on all elements
@@ -46,7 +50,10 @@ function saveSettingsFromOptionsPage() {
         soundsEnabled: document.getElementById('soundsEnabled').checked,
         richNotificationsEnabled: document.getElementById('richNotificationsEnabled').checked,
         openTabsInBackground: document.getElementById('openTabsInBackground').checked,
-        showImagesInNotifications: document.getElementById('showImagesInNotifications').checked
+        showImagesInNotifications: document.getElementById('showImagesInNotifications').checked,
+        showNotificationsFromFeed: document.getElementById('showNotificationsFromFeed').checked,
+        showNotificationsForReplies: document.getElementById('showNotificationsForReplies').checked,        
+        username: document.getElementById('username').value
     }, function () {
         chrome.extension.getBackgroundPage().initialize();
     })
