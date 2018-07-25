@@ -4,7 +4,7 @@ var COLOR_NEW_NOTIFICATION = {
     color: [204, 0, 51, 255]
 };
 
-var audio = new Audio('../sounds/all-eyes-on-me.ogg');
+var audio = null; 
 
 var settings = {
     soundsEnabled: false,
@@ -47,8 +47,8 @@ function getUnvievedNotificationsCount(list) {
     return counter;
 }
 
-function soundsPlaySound() {
-    if (settings.soundsEnabled) {
+function soundsPlaySound(audio) {
+    if (audio && settings.soundsEnabled) {
         audio.play();
     }     
 }

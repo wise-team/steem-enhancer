@@ -7,6 +7,8 @@ var maxRichNotifications = 5;
 var pendingNotifications = [];
 var entriesNotificationList = [];
 
+var audio = new Audio('../sounds/all-eyes-on-me.ogg');
+
 function setEntryClicked(id) {
 	for (let index = 0; index < entriesNotificationList.length; index++) {
 		const element = entriesNotificationList[index];
@@ -23,6 +25,9 @@ var followedTagsArray = [];
 var processingTags = null;
 
 function initialize() {
+
+	steem.api.setOptions({ url: 'https://api.steemit.com' });
+
 	if(settings.isInitialized) {
 		chrome.runtime.openOptionsPage();
 	}
@@ -38,32 +43,39 @@ function initialize() {
 }
 
 function getUserFeed(callback) {
+
 	if(settingsIsUsernameEntered() && settings.showNotificationsFromFeed) {
-		var Api = window.steemWS.Client.get(null, true);
-		Api.initPromise.then(response => {
-			Api.database_api().exec("get_discussions_by_feed", [{
-				tag: settings.username,
-				limit: 10
-			}]).then(response => { 
-				console.log("Checked user feed");
-	
+
+		steem.api.getDiscussionsByFeed({
+			tag: settings.username,
+			limit: 10
+		}, function (err, result) {
+			console.log("Checked user feed");
+
+			if (err) {
+				console.log(err);
+				if (callback) {
+					callback();
+				}
+			} else {
 				var counter = 0;
-				response.forEach(item => {
-	
-					if(settings.richNotificationsEnabled && settings.showNotificationsFromFeed) {
+				result.forEach(item => {
+
+					if (settings.richNotificationsEnabled && settings.showNotificationsFromFeed) {
 						prepareNotification(item, item.author, null);
 					}
-	
+
 					counter++;
-	
-					if (counter >= response.length) {
-						if(callback) {
+
+					if (counter >= result.length) {
+						if (callback) {
 							callback();
-						}	
+						}
 					}
 				})
-			});
+			}
 		});
+
 	} else {
 		if(callback) {
 			callback();
@@ -92,10 +104,13 @@ function prepareNotification(item, tag, conditionalTag) {
 	
 	if(shouldParseEntry) {
 		if (!entryAlreadyProcessed(item.id, entriesNotificationList)) {
+
+			var alreadyViewed = false; 
+			
 			if (!entryAlreadyProcessed(item.id, pendingNotifications)) {
 				var bodyWithoutHTMLTags = item.body.replace(/(<([^>]+)>)/ig, "");
 				bodyWithoutHTMLTags = stripMarkdown(bodyWithoutHTMLTags);
-	
+
 				if (settings.richNotificationsEnabled) {
 					var imageUrl = "";
 	
@@ -118,6 +133,8 @@ function prepareNotification(item, tag, conditionalTag) {
 							image: imageUrl,
 							link: link
 						});
+					} else {
+						alreadyViewed = true; // do not show your own posts on new entries list
 					}
 				}
 			}
@@ -125,7 +142,7 @@ function prepareNotification(item, tag, conditionalTag) {
 			if (conditionalTag) {
 				tagsString = "#" + tag + " #" + conditionalTag;
 			}
-			entriesNotificationList.push({ id: item.id, title: item.title, tags: tagsString, link: link, clicked: false, timestamp: Date() });
+			entriesNotificationList.push({ id: item.id, title: item.title, tags: tagsString, link: link, clicked: alreadyViewed, timestamp: Date() });
 		}
 	}
 }
@@ -174,19 +191,30 @@ function parseFollowedTags() {
 					secondTag = "";
 				}
 
-				var Api = window.steemWS.Client.get(null, true);
-				Api.initPromise.then(response => {
-					Api.database_api().exec("get_discussions_by_created", [{
-						tag: tag,
-						limit: tagEntriesQuantity
-					}]).then(response => {
+				steem.api.getDiscussionsByCreated({
+					tag: tag,
+					limit: tagEntriesQuantity
+				}, function (err, response) {
+					if (err) {
+						console.log(err);
+						tagIndex++;
+						if (tagIndex >= followedTagsArray.length) {
+							getUserFeed(function () {
+								getUserHistory(function () {
+									processNotifications();
+								})
+							});
+						} else {
+							parseTagRecursively();
+						}
+					} else {
 						console.log("Checked tag: " + tag + " " + secondTag + ", posts: " + response.length);
 						var counter = 0;
 						if (response.length == 0) {
 							tagIndex++;
 							if (tagIndex >= followedTagsArray.length) {
-								getUserFeed(function() {
-									getUserHistory(function() {
+								getUserFeed(function () {
+									getUserHistory(function () {
 										processNotifications();
 									})
 								});
@@ -203,8 +231,8 @@ function parseFollowedTags() {
 							if (counter >= response.length) {
 								tagIndex++;
 								if (tagIndex >= followedTagsArray.length) {
-									getUserFeed(function() {
-										getUserHistory(function() {
+									getUserFeed(function () {
+										getUserHistory(function () {
 											processNotifications();
 										})
 									});
@@ -214,12 +242,8 @@ function parseFollowedTags() {
 								}
 							}
 						})
-					});
-				}).catch(function (err) {
-					console.log(err);
-					console.log("reschedule parseFollowing tag from error: " + Date());
-					clearTimeout(processingTags);
-					processingTags = setTimeout(parseFollowedTags, 30 * 1000);
+					}
+					
 				});
 			})()
 		});
@@ -234,7 +258,7 @@ function processNotifications() {
 	}
 
 	if (pendingNotifications.length > maxRichNotifications) {
-		soundsPlaySound();
+		soundsPlaySound(audio);
 		var postsQuantity = pendingNotifications.length
 		pendingNotifications = [];
 		var notification = new Notification("You have many new posts", {
@@ -252,10 +276,11 @@ function processNotifications() {
 	}
 	else {
 		if(pendingNotifications.length) {
-			soundsPlaySound();
+			soundsPlaySound(audio);
 		}
 		pendingNotifications.forEach(notification => {
 			showRichNotification(notification);
+			console.log("Showed notification: " + notification.title)
 			pendingNotifications.splice(notification, 1);
 		});
 	}
@@ -270,21 +295,31 @@ function processNotifications() {
 
 function getUserHistory(callback) {
 	if(settingsIsUsernameEntered()) {
-		var Api = window.steemWS.Client.get(null, true);
-		Api.initPromise.then(response => {
-			Api.database_api().exec("get_account_history", [settings.username, -1, 50]).then(res => {
+		
+		steem.api.getAccountHistory(settings.username, -1, 50, function (err, response) {
+			if (err ) {
+				console.log(err);
+				if(callback) {
+					callback();
+				}
+			} else {
 				console.log("Checked replies");
 				var counter = 0;
-				res.forEach(item => {
+				response.forEach(item => {
 					var operationType = item[1].op[0];
-					if(operationType == "comment") {
+					if (operationType == "comment") {
 						var reply = item[1].op[1];
-						if(reply.author != settings.username) {
-							var tag = JSON.parse(reply.json_metadata).tags[0];
-							var permlink = "https://steemit.com/" + tag + "/@" + reply.author + "/" + reply.permlink;
+						if (reply.author != settings.username) {
+							var tagsList = JSON.parse(reply.json_metadata).tags;
+							if(tagsList) {
+								var tag = tagsList[0] + "/";	
+							} else {
+								var tag = "";
+							}
+							var permlink = "https://steemit.com/" + tag + "@" + reply.author + "/" + reply.permlink;
 							var title = "@" + reply.author + " replied to your post";
-	
-							if(settings.showNotificationsForReplies) {
+
+							if (settings.showNotificationsForReplies) {
 								prepareNotification({
 									id: item[1].trx_id,
 									title: title,
@@ -298,15 +333,19 @@ function getUserHistory(callback) {
 					}
 
 					counter++;
-	
-					if (counter >= res.length) {
-						if(callback) {
+
+					if (counter >= response.length) {
+						if (callback) {
 							callback();
-						}	
+						}
 					}
 				})
-			})
-		})
+			}
+		});
+	} else {
+		if(callback) {
+			callback();
+		}
 	}
 }
 

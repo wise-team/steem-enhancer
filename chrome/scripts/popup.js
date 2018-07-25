@@ -135,17 +135,11 @@ function setAllEntriesAsRead() {
 }
 
 function init() {
-
     settingsReadSettings(function () {
         readNotificationList(function () {
             showLatestEntries();
         });
     });
-
 }
 
 init();
-
-// steem.api.getFeedHistory(function(err, result) {
-//     console.log(err, result);
-//   });

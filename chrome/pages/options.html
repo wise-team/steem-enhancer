@@ -13,7 +13,7 @@
     <script src="../scripts/popper.min.js"></script>
     <script src="../scripts/bootstrap.min.js"></script>
     <script src="../scripts/bootstrap-tagsinput.min.js"></script>
-    <script type="text/javascript" src="../scripts/steem-rpc.js"></script>
+    <script type="text/javascript" src="../scripts/steem.min.js"></script>
 
 </head>
 
@@ -34,10 +34,12 @@
                 want to be notified about posts in 'tesla' tag but only when "polish" tag exist in that post - type "tesla polish" and press enter.
                 It should be visible as a single tag.</p>
                 <p><strong>Our tag #technocracy is added as an example. You can of course remove it, but we will be glad if you leave it as it is :)</strong></p>
-                <div class="col-md-12 ">
+                <div class="col-md-12">
                     <input id="followedTags" type="text" value="" data-role="tagsinput">
                 </div>
-                <p><strong>Your username:</strong></p>
+                
+                <p style="padding-top: 45px"><strong>Your username (without @ prefix):</strong></p>
+
                 <div class="col-md-12 ">
                     <input id="username" type="text" value="">
                 </div>
