@@ -62,7 +62,7 @@ function getUserFeed(callback) {
 				result.forEach(item => {
 
 					if (settings.richNotificationsEnabled && settings.showNotificationsFromFeed) {
-						prepareNotification(item, item.author, null);
+						prepareNotification(item, '@' + item.author, null);
 					}
 
 					counter++;
@@ -138,9 +138,9 @@ function prepareNotification(item, tag, conditionalTag) {
 					}
 				}
 			}
-			var tagsString = "#" + tag;
+			var tagsString = tag;
 			if (conditionalTag) {
-				tagsString = "#" + tag + " #" + conditionalTag;
+				tagsString = tag + " #" + conditionalTag;
 			}
 			entriesNotificationList.push({ id: item.id, title: item.title, tags: tagsString, link: link, clicked: alreadyViewed, timestamp: Date() });
 		}
@@ -224,7 +224,7 @@ function parseFollowedTags() {
 							}
 						}
 						response.forEach(item => {
-							prepareNotification(item, tag, secondTag);
+							prepareNotification(item, '#' + tag, secondTag);
 
 							counter++;
 
