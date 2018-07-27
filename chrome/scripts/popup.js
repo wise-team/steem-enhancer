@@ -53,17 +53,26 @@ function isAnyEntryOnPopupList() {
 }
 
 function handleEntryClick(id) {
-    setEntryClicked(id);
-    removeEntryFromList(id);
-    badgeShowNotificationQuantity(getUnvievedNotificationsCount(entriesNotificationList));
-    
-    if ( ! isAnyEntryOnPopupList()) {
-        showLatestEntries();
-    }
+    setEntryClicked(id, function () {
+        removeEntryFromList(id);
+
+        let lastEntry = $("#content").children().last().attr('id');
+
+        if(lastEntry) {
+            let lastEntryID = lastEntry.replace('item-', '');
+            showNextEntry(lastEntryID);
+        }
+
+        badgeShowNotificationQuantity(getUnvievedNotificationsCount(entriesNotificationList));
+        
+        if ( ! isAnyEntryOnPopupList()) {
+            showLatestEntries();
+        }
+    });
 }
 
 function removeAllEntriesFromList() {
-    var content = document.getElementById("content");
+    let content = document.getElementById("content");
     while (content.firstChild) {
         content.removeChild(content.firstChild);
     }
@@ -73,9 +82,10 @@ function removeAllEntriesFromList() {
 
 function configurePopupActions() {
     $("#read-all").click(function () {
-        setAllEntriesAsRead();
-        removeAllEntriesFromList();
-        badgeShowNotificationQuantity();
+        setAllEntriesAsRead(function(){
+            removeAllEntriesFromList();
+            badgeShowNotificationQuantity();
+        });
     });
 
     $("#settings").click(function () {
@@ -117,21 +127,50 @@ function showLatestEntries(callback) {
     }
 }
 
-function setEntryClicked(id) {
+function showNextEntry(lastEntryID) {
+    let i = entriesNotificationList.length - 1;
+    let itemIndex = 0;
+
+    while (i) {
+        let item = entriesNotificationList[i--];
+        if(item.id == lastEntryID) {
+            itemIndex = i;
+        }
+    }
+
+    while (itemIndex) {
+        var item = entriesNotificationList[itemIndex--];
+        if(item.clicked == false) {
+            displayEntryOnList(item.title, item.link, item.tags, item.id);
+            break;
+        }
+    }
+
+}
+
+function setEntryClicked(id, callback) {
     for (let index = 0; index < entriesNotificationList.length; index++) {
         const element = entriesNotificationList[index];
         if (element.id == id) {
             entriesNotificationList[index].clicked = true;
-            saveNotificationList(entriesNotificationList);
+            saveNotificationList(entriesNotificationList, function() {
+                if(callback) {
+                    callback();
+                }
+            });
         }
     }
 }
 
-function setAllEntriesAsRead() {
+function setAllEntriesAsRead(callback) {
     for (let index = 0; index < entriesNotificationList.length; index++) {
         entriesNotificationList[index].clicked = true;
     }
-    saveNotificationList(entriesNotificationList);
+    saveNotificationList(entriesNotificationList, function() {
+        if(callback) {
+            callback();
+        }
+    });
 }
 
 function init() {
