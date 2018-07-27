@@ -1,6 +1,16 @@
 function displayEntryOnList(title, link, tags, id) {
     var content = document.getElementById("content");
 
+    var check_icon_open = document.createElement("i");
+    check_icon_open.classList.add("fa");
+    check_icon_open.classList.add("fa-square-o");
+    check_icon_open.classList.add("icon-open");
+
+    var check_icon_closed = document.createElement("i");
+    check_icon_closed.classList.add("fa");
+    check_icon_closed.classList.add("fa-check-square-o");
+    check_icon_closed.classList.add("icon-checked");
+
     var item = document.createElement("div");
     item.classList.add("item");
 
@@ -19,6 +29,9 @@ function displayEntryOnList(title, link, tags, id) {
     checkElement.classList.add("item-content-check");
     checkElement.setAttribute("id", id);
     checkElement.setAttribute("title", "Set as read");
+
+    checkElement.appendChild(check_icon_open);
+    checkElement.appendChild(check_icon_closed);
 
     var tagsElement = document.createElement("span");
     tagsElement.classList.add("item-content-tags");
@@ -56,11 +69,11 @@ function handleEntryClick(id) {
     setEntryClicked(id, function () {
         removeEntryFromList(id);
 
-        let lastEntry = $("#content").children().last().attr('id');
+        let lastEntry = $("#content").children().last();
 
-        if(lastEntry) {
-            let lastEntryID = lastEntry.replace('item-', '');
-            showNextEntry(lastEntryID);
+        if(lastEntry.length) {
+            let lastEntryID = lastEntry.attr('id').replace('item-', '');
+            showNextUnclickedEntry(lastEntryID);
         }
 
         badgeShowNotificationQuantity(getUnvievedNotificationsCount(entriesNotificationList));
@@ -81,18 +94,18 @@ function removeAllEntriesFromList() {
 }
 
 function configurePopupActions() {
-    $("#read-all").click(function () {
+    $('.actions').on('click', '#read-all', function (e) {
         setAllEntriesAsRead(function(){
             removeAllEntriesFromList();
             badgeShowNotificationQuantity();
         });
     });
 
-    $("#settings").click(function () {
+    $('.actions').on('click', '#settings', function (e) {
         chrome.runtime.openOptionsPage();
     });
 
-    $("#content").on("mousedown", "a", function (event) {
+    $(".content").on("mousedown", "a", function (event) {
         var entry = $(this)[0];
         handleEntryClick(entry.id);
 
@@ -103,7 +116,7 @@ function configurePopupActions() {
 
     });
 
-    $('.item-content-check').bind('click', function () {
+    $('.content').on('click', '.item-content-check', function (e) {
         handleEntryClick(this.id);
     });
 }
@@ -127,7 +140,7 @@ function showLatestEntries(callback) {
     }
 }
 
-function showNextEntry(lastEntryID) {
+function showNextUnclickedEntry(lastEntryID) {
     let i = entriesNotificationList.length - 1;
     let itemIndex = 0;
 
@@ -139,7 +152,7 @@ function showNextEntry(lastEntryID) {
     }
 
     while (itemIndex) {
-        var item = entriesNotificationList[itemIndex--];
+        let item = entriesNotificationList[itemIndex--];
         if(item.clicked == false) {
             displayEntryOnList(item.title, item.link, item.tags, item.id);
             break;

@@ -7,7 +7,7 @@
 .item {
     width: 100%;
     font-weight: 400;
-    color: #a19f9f;
+    color: #5c9dd5;
     font-size: 1.2em;
     font-family: Lato; 
     border-bottom: 1px dotted #ededed;
@@ -38,11 +38,11 @@
     vertical-align: top;
     margin-left: 5px;
     margin-top: 5px;
-    background: url(../icons/check.png) no-repeat;
     display: inline-block;
     width: 20px;
     height: 20px;
     cursor: pointer;
+    color: #000;
 }
 
 .item-content-tags {
@@ -60,4 +60,13 @@
 
 .actions {
     text-align: right;
+}
+
+.item-content-check .fa-check-square-o,
+.item-content-check:hover .fa-square-o {
+    display: none;
+}
+.item-content-check:hover .fa-check-square-o {
+    display: inline;
+    color: #5c9dd5;
 }
