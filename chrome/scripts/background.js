@@ -3,9 +3,10 @@ var settingsNewEntriesNotification = true;
 const tagEntriesQuantity = 10;
 const maxTagSearchingDept = 5;
 var maxRichNotifications = 5;
-
 var pendingNotifications = [];
 var entriesNotificationList = [];
+var followedTagsArray = [];
+var processingTags = null;
 
 var audio = new Audio('../sounds/all-eyes-on-me.ogg');
 
@@ -20,9 +21,6 @@ function setEntryClicked(id) {
 		}
 	}
 }
-
-var followedTagsArray = [];
-var processingTags = null;
 
 function initialize() {
 
@@ -86,7 +84,7 @@ function getUserFeed(callback) {
 
 function prepareNotification(item, tag, conditionalTag) {
 	var shouldParseEntry = false;
-	
+	var link = "";
 	var metadata = JSON.parse(item.json_metadata);
 
 	if (conditionalTag) {
@@ -101,7 +99,6 @@ function prepareNotification(item, tag, conditionalTag) {
 	} else {
 		shouldParseEntry = true;
 	}
-	
 	if(shouldParseEntry) {
 		if (!entryAlreadyProcessed(item.id, entriesNotificationList)) {
 
@@ -110,6 +107,12 @@ function prepareNotification(item, tag, conditionalTag) {
 			if (!entryAlreadyProcessed(item.id, pendingNotifications)) {
 				var bodyWithoutHTMLTags = item.body.replace(/(<([^>]+)>)/ig, "");
 				bodyWithoutHTMLTags = stripMarkdown(bodyWithoutHTMLTags);
+
+				if(item.replyLink) {
+					link = item.replyLink;
+				} else {
+					link = "https://steemit.com/@" + item.author + "/" + item.permlink;
+				}
 
 				if (settings.richNotificationsEnabled) {
 					var imageUrl = "";
@@ -120,12 +123,7 @@ function prepareNotification(item, tag, conditionalTag) {
 	
 					if(item.author != settings.username) {
 						console.log("Preparing notification: " + item.id + ", " + item.title);
-						var link = "";
-						if(item.replyLink) {
-							link = item.replyLink;
-						} else {
-							link = "https://steemit.com/@" + item.author + "/" + item.permlink;
-						}
+						
 						pendingNotifications.push({
 							id: item.id,
 							title: item.title,
@@ -142,6 +140,7 @@ function prepareNotification(item, tag, conditionalTag) {
 			if (conditionalTag) {
 				tagsString = tag + " #" + conditionalTag;
 			}
+
 			entriesNotificationList.push({ id: item.id, title: item.title, tags: tagsString, link: link, clicked: alreadyViewed, timestamp: Date() });
 		}
 	}
