@@ -16,6 +16,6 @@
    "name": "Steem Enhancer",
    "permissions": [ "notifications", "storage" ],
    "short_name": "Steem Enhancer",
-   "version": "0.1.16",
+   "version": "0.1.17",
    "options_page": "pages/options.html"
 }
